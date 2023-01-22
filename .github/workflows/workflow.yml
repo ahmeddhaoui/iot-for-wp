@@ -19,6 +19,7 @@ jobs:
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
+      working-directory: iot-for-wp
 
     - name: Cache Composer packages
       id: composer-cache
@@ -30,6 +31,8 @@ jobs:
           ${{ runner.os }}-php-
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+      working-directory: iot-for-wp
 
     - name: Run Static Tests
       run: composer run-static-tests
+      working-directory: iot-for-wp
