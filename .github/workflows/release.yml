@@ -38,6 +38,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       working-directory: iot-for-wp
       with:
-        files: iot-for-wp.zip
+        files: iot-for-wp/iot-for-wp.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
