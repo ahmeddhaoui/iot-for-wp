@@ -1,0 +1,15 @@
+{
+  "name": "iot-for-wp",
+  "private": true,
+  "devDependencies": {
+    "css-loader": "^4.3.0",
+    "lint-staged": "^13.1.0",
+    "mini-css-extract-plugin": "^0.11.2",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  }
+}
