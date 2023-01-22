@@ -1,0 +1,10 @@
+.idea
+
+#docker config files
+!.docker/
+.docker/*
+!.docker/mosquitto/config/mosquitto.conf
+!.docker/php-config/php.conf.ini
+
+#iot-for-wp
+iot-for-wp/vendor

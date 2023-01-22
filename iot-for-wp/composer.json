@@ -1,0 +1,49 @@
+{
+  "name": "techda/iot-for-wp",
+  "description": "IoT for WordPress is a Plugin to connect IOT Objects with WordPress and communicate with them throw protocols like MQTT.",
+  "type": "wordpress-plugin",
+  "license": "GPLv2",
+  "autoload": {
+    "psr-4": {
+      "IOT4WP\\": "src"
+    }
+  },
+  "authors": [
+    {
+      "name": "Ahmed Dhaoui",
+      "email": "ahmed.dhaoui@techda.de"
+    }
+  ],
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpmd/phpmd": "^2.13",
+    "phpstan/phpstan": "^1.9",
+    "sebastian/phpcpd": "^6.0",
+    "squizlabs/php_codesniffer": "^3.7",
+    "wp-coding-standards/wpcs": "^2.3"
+  },
+  "scripts": {
+    "run-static-tests": [
+      "@phpcs",
+      "@phpcpd",
+      "@phpstan",
+      "@phpmd"
+    ],
+    "phpcs": "vendor/bin/phpcs -s -p src",
+    "phpcbf": "vendor/bin/phpcbf src",
+    "phpstan": "vendor/bin/phpstan analyze --level 3 src",
+    "phpcpd": "vendor/bin/phpcpd --fuzzy src",
+    "phpmd": "vendor/bin/phpmd src text phpmd.xml --minimumpriority 2"
+  }
+}

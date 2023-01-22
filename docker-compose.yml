@@ -1,0 +1,116 @@
+version: '3.9'
+
+services:
+  # MySQL Image
+  db:
+    container_name: MySQL
+    image: mysql:latest
+    ports:
+      - "${IP}:3306:3306"
+    command: [
+      '--default_authentication_plugin=mysql_native_password',
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci'
+    ]
+    volumes:
+      - .docker/wp-data:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+
+  # WordPress Image
+  wp:
+    container_name: webserver
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "${IP}:80:80"
+    volumes:
+      - .docker/php-config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - .docker/wp-app:/var/www/html
+      - ./iot-for-wp:/var/www/html/wp-content/plugins/iot-for-wp
+    working_dir: /var/www/html
+    environment:
+      WORDPRESS_DB_HOST: "${WORDPRESS_DB_HOST}"
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${WORDPRESS_DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+    depends_on:
+      - db
+    links:
+      - db
+    healthcheck:
+      test: curl http://${IP}:80 || exit 1
+      interval: 15s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
+
+  #Composer Image
+  composer:
+    container_name: composer
+    image: composer:latest
+    volumes:
+      - .docker/php-config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./iot-for-wp:/var/www/html/wp-content/plugins/iot-for-wp
+    working_dir: /var/www/html/wp-content/plugins/iot-for-wp
+    command: composer install
+    depends_on:
+      wp:
+        condition: service_healthy
+
+  #WPCLI Image
+  wpinstall:
+    container_name: wordpress-installer
+    image: wordpress:cli
+    volumes:
+      - .docker/php-config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - .docker/wp-app:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: "${WORDPRESS_DB_HOST}"
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${WORDPRESS_DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+    command: bash -c "wp core install --url=http://localhost --title='Iot for WP' --admin_user=admin --admin_email=test@example.com --admin_password=admin"
+    depends_on:
+      wp:
+        condition: service_healthy
+
+  #PHPMyADMIN
+  pma:
+    container_name: PHPMYADMIN
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      UPLOAD_LIMIT: 50M
+    ports:
+      - "${IP}:8080:80"
+    links:
+      - db:db
+
+  #Mailhog Image
+  mailhog:
+    container_name: MAIL
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - "${IP}:1025:1025" # smtp server
+      - "${IP}:8025:8025" # web ui
+
+  #MQTT Test Server
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    volumes:
+      - .docker/mosquitto:/mosquitto
+      - .docker/mosquitto/data:/mosquitto/data
+      - .docker/mosquitto/log:/mosquitto/log
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+volumes:
+  db_data:
