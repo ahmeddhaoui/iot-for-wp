@@ -2,7 +2,7 @@
   "name": "techda/iot-for-wp",
   "description": "IoT for WordPress is a Plugin to connect IOT Objects with WordPress and communicate with them throw protocols like MQTT.",
   "type": "wordpress-plugin",
-  "license": "GPLv2",
+  "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
       "IOT4WP\\": "src"
