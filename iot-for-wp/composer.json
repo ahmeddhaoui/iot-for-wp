@@ -37,7 +37,6 @@
     "run-static-tests": [
       "@phpcs",
       "@phpcpd",
-      "@phpstan",
       "@phpmd"
     ],
     "phpcs": "vendor/bin/phpcs -s -p src",

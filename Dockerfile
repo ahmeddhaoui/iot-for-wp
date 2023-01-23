@@ -1,4 +1,4 @@
-FROM wordpress:latest
+FROM wordpress:php7.4-apache
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
