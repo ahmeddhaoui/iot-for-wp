@@ -44,6 +44,6 @@ register_deactivation_hook(__FILE__, function (){
 });
 
 if(class_exists( IotForWp::class)){
-//	new IotForWp();
+	new IotForWp();
 }
 
