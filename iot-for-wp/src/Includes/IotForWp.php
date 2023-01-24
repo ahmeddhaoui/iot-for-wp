@@ -9,14 +9,19 @@ declare(strict_types=1);
 
 namespace IOT4WP\Includes;
 
-class IotForWp {
+use IOT4WP\Controller\Connector;
+use IOT4WP\CustomPostTypes\BrokerCustomPostType;
+use IOT4WP\Protocols\MqttProtocol;
 
+class IotForWp {
 
 	public static string $plugin_name = 'iot-for-wp';
 	public static string $version     = '1.0.0';
+	public static array $protocols;
 
 	public function __construct() {
-		add_action( 'init', array( __CLASS__, 'load_classes' ) );
+		add_action( 'init', array( __CLASS__, 'load_classes' ), 0 );
+		add_action( 'init', array( __CLASS__, 'register_protocols' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_admin_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_app_scripts' ) );
 	}
@@ -24,6 +29,8 @@ class IotForWp {
 	public static function load_classes(): void {
 		new Database();
 		new AdminSettings();
+		new BrokerCustomPostType();
+		new Connector();
 	}
 
 	public function load_admin_scripts(): void {
@@ -51,6 +58,7 @@ class IotForWp {
 			array(
 				'ajaxurl'                      => admin_url( 'admin-ajax.php' ),
 				'handel_settings_action_nonce' => wp_create_nonce( 'handel_settings_action_nonce' ),
+				'test_connections'             => wp_create_nonce( 'test_connections' ),
 			)
 		);
 	}
@@ -73,5 +81,9 @@ class IotForWp {
 
 		wp_register_style( 'iot4wp-app-style', $admin_style_path, false, self::$version );
 		wp_enqueue_style( 'iot4wp-app-style' );
+	}
+
+	public static function register_protocols(): void {
+		self::$protocols = array( MqttProtocol::class );
 	}
 }
