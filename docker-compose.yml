@@ -100,17 +100,5 @@ services:
     ports:
       - "${IP}:1025:1025" # smtp server
       - "${IP}:8025:8025" # web ui
-
-  #MQTT Test Server
-  mosquitto:
-    image: eclipse-mosquitto
-    container_name: mosquitto
-    volumes:
-      - .docker/mosquitto:/mosquitto
-      - .docker/mosquitto/data:/mosquitto/data
-      - .docker/mosquitto/log:/mosquitto/log
-    ports:
-      - "1883:1883"
-      - "9001:9001"
 volumes:
   db_data:
