@@ -29,12 +29,12 @@ jQuery(document).ready(function ($) {
 
         let missing_data = false;
         $('input:required').each(function () {
-            if ($(this).val() === ''){
+            if ($(this).val() === '') {
                 missing_data = true;
             }
         });
 
-        if(missing_data){
+        if (missing_data) {
             alert('error please fill all required fields!');
             return;
         }
@@ -65,4 +65,70 @@ jQuery(document).ready(function ($) {
             }
         });
     });
+
+    //Topics Backend Forms
+    function hide_all_data_format_options() {
+        $('.data-input-format').each(function (index, element) {
+            $(this).hide();
+        });
+    }
+
+    function show_selected_option() {
+        let val = $('#data-input-format-select').find(":selected").val();
+        $('.format-config-' + val).show();
+    }
+
+    $('#data-input-format-select').on('change', function () {
+        hide_all_data_format_options();
+        show_selected_option();
+    });
+
+    show_selected_option();
+
+    $('#topic_subscribe').on('change', function () {
+        $('#topic_subscribe_data').toggle();
+    });
+
+    if (!$('#topic_subscribe').is(':checked')) {
+        $('#topic_subscribe_data').toggle();
+    }
+
+    $('#topic_publish').on('change', function () {
+        $('#topic_publish_data').toggle();
+    });
+
+    if ($('#topic_publish').is(':checked')) {
+        $('#topic_publish_data').toggle();
+    }
+
+    // Subscribe Action Table
+    function hide_all_subscribe_data_tables() {
+        $('#subscribe-data-col table, #publish-data-col table').each(function () {
+            $(this).hide()
+        });
+    }
+
+    function show_select_subscribe_data_tables() {
+        let target = $('#subscribe_action_select').find(":selected").val();
+        $('#' + target).show();
+    }
+
+    function show_select_publish_data_tables() {
+        let target = $('#publish_action_select').find(":selected").val();
+        $('#' + target).show();
+    }
+
+    $('#subscribe_action_select').on('change', function () {
+        hide_all_subscribe_data_tables();
+        show_select_subscribe_data_tables();
+    });
+
+    $('#publish_action_select').on('change', function () {
+        hide_all_subscribe_data_tables();
+        show_select_publish_data_tables();
+    });
+
+    hide_all_subscribe_data_tables();
+    show_select_subscribe_data_tables();
+    show_select_publish_data_tables();
 });

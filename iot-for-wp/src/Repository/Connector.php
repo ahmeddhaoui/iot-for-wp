@@ -5,7 +5,7 @@
  * @package    Iot_For_Wp
  */
 
-namespace IOT4WP\Controller;
+namespace IOT4WP\Repository;
 
 use ReflectionClass;
 

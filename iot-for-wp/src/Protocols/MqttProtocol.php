@@ -17,8 +17,6 @@ use PhpMqtt\Client\ConnectionSettings;
  */
 class MqttProtocol extends AbstractIotProtocol {
 
-
-
 	protected MqttClient $mqtt_client;
 	protected ConnectionSettings $mqtt_connection_settings;
 
