@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace IOT4WP\Includes;
 
-use IOT4WP\Controller\Connector;
+use IOT4WP\Repository\Connector;
 use IOT4WP\CustomPostTypes\BrokerCustomPostType;
+use IOT4WP\CustomPostTypes\TopicCustomPostType;
 use IOT4WP\Protocols\MqttProtocol;
 
 class IotForWp {
@@ -30,6 +31,7 @@ class IotForWp {
 		new Database();
 		new AdminSettings();
 		new BrokerCustomPostType();
+		new TopicCustomPostType();
 		new Connector();
 	}
 
@@ -46,7 +48,7 @@ class IotForWp {
 		$admin_style_path = IOT_FOR_WP_PLUGIN_URI . 'frontend/css/admin.css';
 
 		if ( file_exists( IOT_FOR_WP_PLUGIN_PATH . 'assets/admin.min.css' ) ) {
-			$admin_style_path = IOT_FOR_WP_PLUGIN_URI . 'assets/admin.min.js';
+			$admin_style_path = IOT_FOR_WP_PLUGIN_URI . 'assets/admin.min.css';
 		}
 
 		wp_register_style( 'iot4wp-admin-style', $admin_style_path, false, self::$version );
@@ -59,6 +61,7 @@ class IotForWp {
 				'ajaxurl'                      => admin_url( 'admin-ajax.php' ),
 				'handel_settings_action_nonce' => wp_create_nonce( 'handel_settings_action_nonce' ),
 				'test_connections'             => wp_create_nonce( 'test_connections' ),
+				'save_topics'                  => wp_create_nonce( 'save_topics' ),
 			)
 		);
 	}

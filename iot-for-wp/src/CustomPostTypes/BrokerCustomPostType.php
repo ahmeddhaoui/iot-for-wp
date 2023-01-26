@@ -138,6 +138,7 @@ class BrokerCustomPostType {
 		</div>
 	<?php endforeach; ?>
 		<?php
+		wp_nonce_field( 'test_connections', 'nonce' );
 	}
 
 	/**
@@ -149,7 +150,7 @@ class BrokerCustomPostType {
 	public function save_broker_meta_data( int $post_id ): void {
 		$post_data = wp_unslash( $_POST );
 
-		if ( ! isset( $post_data['broker_protocol'] ) && ! isset( $post_data['_wpnonce'] ) && ! wp_verify_nonce( $post_data['_wpnonce'] ) ) {
+		if ( ! isset( $post_data['broker_protocol'] ) || ! isset( $post_data['nonce'] ) || ! wp_verify_nonce( $post_data['nonce'], 'test_connections' ) ) {
 			return;
 		}
 
