@@ -118,4 +118,13 @@ class Database
             )
         );
 	}
+
+	public static function delete_data_from_table(string $table, string $intervall): void
+    {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix.$table;
+        $sql = $wpdb->prepare("DELETE FROM {$table_name} WHERE created_date < NOW() - INTERVAL %s DAY;", $intervall);
+        $wpdb->query($sql);
+    }
 }

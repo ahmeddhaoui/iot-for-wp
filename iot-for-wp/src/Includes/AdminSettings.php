@@ -203,10 +203,11 @@ class AdminSettings {
 
 	public function render_check_box( array $args ): void {
 		$option_name = $args[0];
+		$val         = isset( $this->iot_for_wp_settings_options[ $option_name ] ) ?? '';
 		printf(
 			'<input type="checkbox" name="iot_for_wp_settings_option_name[%1$s]" id="%1$s" %2$s>',
-			$option_name,
-			( isset( $this->iot_for_wp_settings_options[ $option_name ] ) && $this->iot_for_wp_settings_options[ $option_name ] === $option_name ) ? 'checked' : ''
+			esc_attr( $option_name ),
+			checked( $val, true, false )
 		);
 	}
 
