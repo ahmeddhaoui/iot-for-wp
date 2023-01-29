@@ -27,15 +27,14 @@ class BrokerRepository {
 		);
 	}
 
-	public static function is_broker_active( int $broker_id ): bool {
+	public static function is_broker_active( int $broker_id ): int {
 		global $wpdb;
-		$sql          = $wpdb->prepare("SELECT meta_value FROM %s WHERE post_id = %s and meta_key = %s;",
-			$wpdb->postmeta,
+		$sql          = $wpdb->prepare("SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %s and meta_key = %s;",
 			$broker_id,
 			BrokerCustomPostType::$broker_status_meta_key
 		);
-		$query_result = $wpdb->get_results( $sql, OBJECT );
+		$query_result = $wpdb->get_results( $sql, ARRAY_A );
 
-		return (int) $query_result[0]->meta_value;
+		return (int) $query_result[0]['meta_value'];
 	}
 }
