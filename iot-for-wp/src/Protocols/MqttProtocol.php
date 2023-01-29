@@ -7,6 +7,7 @@
 
 namespace IOT4WP\Protocols;
 
+use IOT4WP\Includes\Logger;
 use PhpMqtt\Client\Exceptions\ConfigurationInvalidException;
 use PhpMqtt\Client\Exceptions\ConnectingToBrokerFailedException;
 use PhpMqtt\Client\MqttClient;
@@ -20,6 +21,7 @@ class MqttProtocol extends AbstractIotProtocol {
 
 	protected MqttClient $mqtt_client;
 	protected ConnectionSettings $mqtt_connection_settings;
+	protected array $broker_settings;
 	private static $instance = null;
 
 	public static function get_instance( int $broker_id, array $broker_settings ) {
@@ -31,6 +33,7 @@ class MqttProtocol extends AbstractIotProtocol {
 	}
 
 	private function __construct( array $broker_settings ) {
+		$this->broker_settings          = $broker_settings;
 		$this->mqtt_client              = $this->get_mqtt_client( $broker_settings );
 		$this->mqtt_connection_settings = $this->get_connection_settings( $broker_settings );
 	}
@@ -84,7 +87,7 @@ class MqttProtocol extends AbstractIotProtocol {
 		);
 	}
 
-	public function get_connection_settings( $broker_settings ): ConnectionSettings {
+	public function get_connection_settings( array $broker_settings ): ConnectionSettings {
 		$connection_settings = new ConnectionSettings();
 		$connection_settings
 			->setUsername( $broker_settings['user'] )
@@ -107,7 +110,7 @@ class MqttProtocol extends AbstractIotProtocol {
 			} catch ( ConfigurationInvalidException | ConnectingToBrokerFailedException $e ) {
 				if ( true === WP_DEBUG ) {
                     // phpcs:disable WordPress.PHP.DevelopmentFunctions
-					error_log( print_r( $e->getMessage(), true ) );
+					Logger::log( 'Error: ', 'Cant Connect for Server ' . $this->broker_settings['server'] . ' with Message: ' . $e->getMessage() );
                     // phpcs:enable
 				}
 				return false;

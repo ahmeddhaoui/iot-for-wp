@@ -187,7 +187,7 @@ class TopicCustomPostType {
 		$format_settings      = array(
 			'plaintext' => array(
 				__( 'Extract certain value using Regex.', 'iot-for-wp' ),
-				__( 'Example: /^[0-9]+$/', 'iot-for-wp' ),
+				__( 'Example: /[0-9]+/m', 'iot-for-wp' ),
 			),
 			'json'      => array(
 				__( 'Save only certain values from JSON', 'iot-for-wp' ),
@@ -263,9 +263,9 @@ class TopicCustomPostType {
 			</table>
 			<hr>
 			<h3><?php echo esc_attr_e( 'WordPress Actions', 'iot-for-wp' ); ?></h3>
-			<p><strong>Use placeholder {{data}}</strong> for your Content. Example: for Regex can use data index
+			<p><strong>Use placeholder {{message}}</strong> for the whole Message. Example: for Regex can use data index
 				like<strong>{{data[0]}}</strong>
-				for Json and XML format: <strong>{{data[your-key]}}</strong>.</p>
+				for Json and XML format: <strong>{{your-key}} like {{temperature}}</strong>.</p>
 			<table class="subscribe-action-table">
 				<thead>
 				<tr>
