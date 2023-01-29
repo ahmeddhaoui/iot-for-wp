@@ -12,6 +12,6 @@ namespace IOT4WP\Includes;
 class Deactivation {
 
 	public static function deactivate(): void {
-
+		 wp_clear_scheduled_hook( 'iot_check_subscribe' );
 	}
 }

@@ -17,10 +17,20 @@ use PhpMqtt\Client\ConnectionSettings;
  */
 class MqttProtocol extends AbstractIotProtocol {
 
+
 	protected MqttClient $mqtt_client;
 	protected ConnectionSettings $mqtt_connection_settings;
+	private static $instance = null;
 
-	public function __construct( array $broker_settings ) {
+	public static function get_instance( int $broker_id, array $broker_settings ) {
+		if ( null === self::$instance[ $broker_id ] ) {
+			self::$instance[ $broker_id ] = new self( $broker_settings );
+		}
+
+		return self::$instance[ $broker_id ];
+	}
+
+	private function __construct( array $broker_settings ) {
 		$this->mqtt_client              = $this->get_mqtt_client( $broker_settings );
 		$this->mqtt_connection_settings = $this->get_connection_settings( $broker_settings );
 	}
@@ -79,14 +89,15 @@ class MqttProtocol extends AbstractIotProtocol {
 		$connection_settings
 			->setUsername( $broker_settings['user'] )
 			->setPassword( $broker_settings['password'] )
-			->setKeepAliveInterval( $broker_settings['keep-alive-interval'] )
-			->setReconnectAutomatically( false )
+			->setKeepAliveInterval( 10 )
+			->setReconnectAutomatically( true )
+			->setLastWillMessage( '0' )
 			->setMaxReconnectAttempts( 0 );
 		return $connection_settings;
 	}
 
 	public function get_mqtt_client( $broker_settings ): MqttClient {
-		return new MqttClient( $broker_settings['server'], $broker_settings['port'], $broker_settings['clientID'] );
+		return new MqttClient( $broker_settings['server'], $broker_settings['port'], wp_rand() );
 	}
 
 	public function connect(): bool {
@@ -113,8 +124,8 @@ class MqttProtocol extends AbstractIotProtocol {
 		$this->mqtt_client->publish( $topic, $message );
 	}
 
-	public function subscribe( string $topic, callable $callback, bool $loop ): void {
-		$this->mqtt_client->subscribe( $topic, $callback );
+	public function subscribe( string $topic, callable $callback, $loop, $quality_of_service ): void {
+		$this->mqtt_client->subscribe( $topic, $callback, $quality_of_service );
 
 		if ( $loop ) {
 			$this->mqtt_client->loop();
@@ -123,5 +134,13 @@ class MqttProtocol extends AbstractIotProtocol {
 
 	public function unsubscribe( string $topic ): void {
 		$this->mqtt_client->unsubscribe( $topic );
+	}
+
+	public function is_connected(): bool {
+		return $this->mqtt_client->isConnected();
+	}
+
+	public function register_loop_event_handler( callable $callback ): void {
+		$this->mqtt_client->registerLoopEventHandler( $callback );
 	}
 }

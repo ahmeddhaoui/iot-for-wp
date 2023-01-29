@@ -52,6 +52,7 @@ jQuery(document).ready(function ($) {
             url: iot4wp_admin_script.ajaxurl,
             data: {
                 action: 'test_connections',
+                post_id: $('#post_ID').val(),
                 protocol: protocol,
                 broker_data: broker_data,
                 nonce: iot4wp_admin_script.test_connections,

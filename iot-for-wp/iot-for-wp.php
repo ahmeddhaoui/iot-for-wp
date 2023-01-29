@@ -26,6 +26,7 @@ use IOT4WP\Includes\Activation;
 use IOT4WP\Includes\Deactivation;
 use IOT4WP\Includes\IotForWp;
 
+
 defined('ABSPATH') or exit();
 
 if (is_readable(__DIR__ . '/vendor/autoload.php')) {
@@ -35,15 +36,14 @@ if (is_readable(__DIR__ . '/vendor/autoload.php')) {
 define('IOT_FOR_WP_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('IOT_FOR_WP_PLUGIN_URI', plugin_dir_url(__FILE__));
 
-register_activation_hook(__FILE__, function (){
-	Activation::activate();
+register_activation_hook(__FILE__, function () {
+    Activation::activate();
 });
 
-register_deactivation_hook(__FILE__, function (){
-	Deactivation::deactivate();
+register_deactivation_hook(__FILE__, function () {
+    Deactivation::deactivate();
 });
 
-if(class_exists( IotForWp::class)){
-	new IotForWp();
+if (class_exists(IotForWp::class)) {
+    new IotForWp();
 }
-

@@ -5,10 +5,13 @@
  * @package    Iot_For_Wp
  */
 
+declare(strict_types=1);
+
 namespace IOT4WP\CustomPostTypes;
 
 use IOT4WP\Includes\AdminSettings;
 use IOT4WP\Repository\BrokerRepository;
+use IOT4WP\Repository\SubscribeRepository;
 use WP_Post;
 
 class TopicCustomPostType {
@@ -19,6 +22,8 @@ class TopicCustomPostType {
 	public static string $topic_meta_topic_path           = 'iot_topic_path';
 	public static string $topic_meta_topic_subscribe_data = 'iot_topic_subscribe_data';
 	public static string $topic_meta_topic_publish_data   = 'iot_topic_publish_data';
+	public static string $topic_meta_subscribe_status     = 'iot_topic_subscribe_status';
+	public static string $topic_meta_publish_status       = 'iot_topic_publish_status';
 
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_iot_topics_custom_post_type' ) );
@@ -125,12 +130,10 @@ class TopicCustomPostType {
 	 * @SuppressWarnings(PHPMD)
 	 */
 	public function add_topic_broker_settings( WP_Post $post, array $data ): void {
-		$broker_id            = get_post_meta( $post->ID, self::$topic_meta_broker_id, true );
-		$topic_path           = get_post_meta( $post->ID, self::$topic_meta_topic_path, true );
-		$topic_subscribe_data = get_post_meta( $post->ID, self::$topic_meta_topic_subscribe_data, true );
-		$topic_publish_data   = get_post_meta( $post->ID, self::$topic_meta_topic_publish_data, true );
-		$subscribe_status     = isset( $topic_subscribe_data['status'] ) && 'on' === $topic_subscribe_data['status'];
-		$publish_status       = isset( $topic_publish_data['status'] ) && 'on' === $topic_publish_data['status'];
+		$broker_id        = get_post_meta( $post->ID, self::$topic_meta_broker_id, true );
+		$topic_path       = get_post_meta( $post->ID, self::$topic_meta_topic_path, true );
+		$subscribe_status = get_post_meta( $post->ID, self::$topic_meta_subscribe_status, true );
+		$publish_status   = get_post_meta( $post->ID, self::$topic_meta_publish_status, true );
 
 		?>
 		<div class="row">
@@ -515,10 +518,19 @@ class TopicCustomPostType {
 			return;
 		}
 
+		$subscribe_status = isset( $post_data['topic']['topic_subscribe']['status'] ) && 'on' === $post_data['topic']['topic_subscribe']['status'] ?: 0;
+		$publish_status   = isset( $post_data['topic']['topic_publish']['status'] ) && 'on' === $post_data['topic']['topic_publish']['status'] ?: 0;
 		update_post_meta( $post_id, self::$topic_meta_broker_id, $post_data['topic']['broker_id'] ?? '' );
 		update_post_meta( $post_id, self::$topic_meta_topic_path, $post_data['topic']['path'] ?? '' );
 		update_post_meta( $post_id, self::$topic_meta_topic_subscribe_data, $post_data['topic']['topic_subscribe'] ?? '' );
 		update_post_meta( $post_id, self::$topic_meta_topic_publish_data, $post_data['topic']['topic_publish'] ?? '' );
+		update_post_meta( $post_id, self::$topic_meta_subscribe_status, $subscribe_status );
+		update_post_meta( $post_id, self::$topic_meta_publish_status, $publish_status );
 
+		if ( $subscribe_status ) {
+			SubscribeRepository::add_topic_id_to_list( $post_id );
+		} else {
+			SubscribeRepository::remove_topic_id_from_list( $post_id );
+		}
 	}
 }

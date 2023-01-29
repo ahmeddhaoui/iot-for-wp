@@ -155,7 +155,7 @@ class BrokerCustomPostType {
 		}
 
 		$post_data       = wp_unslash( $_POST );
-		$broker_status   = isset( $post_data['broker_status'] );
+		$broker_status   = isset( $post_data['broker_status'] ) && 'on' === $post_data['broker_status'] ?: 0;
 		$broker_protocol = $post_data['broker_protocol'];
 		$broker_data     = $post_data[ $broker_protocol ];
 
