@@ -16,6 +16,7 @@ use IOT4WP\Protocols\MqttProtocol;
 
 class IotForWp {
 
+
 	public static string $plugin_name = 'iot-for-wp';
 	public static string $version     = '1.0.0';
 	public static array $protocols;
@@ -33,6 +34,7 @@ class IotForWp {
 		new BrokerCustomPostType();
 		new TopicCustomPostType();
 		new Connector();
+		new Cron();
 	}
 
 	public function load_admin_scripts(): void {
