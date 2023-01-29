@@ -13,6 +13,7 @@ use IOT4WP\Repository\Connector;
 use IOT4WP\CustomPostTypes\BrokerCustomPostType;
 use IOT4WP\CustomPostTypes\TopicCustomPostType;
 use IOT4WP\Protocols\MqttProtocol;
+use IOT4WP\Repository\PublishRepository;
 
 class IotForWp {
 
@@ -35,6 +36,7 @@ class IotForWp {
 		new TopicCustomPostType();
 		new Connector();
 		new Cron();
+		new PublishRepository();
 	}
 
 	public function load_admin_scripts(): void {

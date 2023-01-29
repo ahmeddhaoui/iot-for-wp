@@ -11,10 +11,14 @@ namespace IOT4WP\CustomPostTypes;
 
 use IOT4WP\Includes\AdminSettings;
 use IOT4WP\Repository\BrokerRepository;
+use IOT4WP\Repository\Connector;
+use IOT4WP\Repository\PublishRepository;
 use IOT4WP\Repository\SubscribeRepository;
+use IOT4WP\Repository\TopicsRepository;
 use WP_Post;
 
 class TopicCustomPostType {
+
 
 
 	public static string $custom_post_name                = 'iot_topics';
@@ -234,7 +238,7 @@ class TopicCustomPostType {
 						<td style="display:none;" class="data-input-format format-config-<?php echo esc_attr( $key ); ?>">
 							<input width="100%" class="regular-text <?php echo esc_attr( $key ); ?>" type="text"
 								   name="topic[topic_subscribe][<?php echo esc_attr( $key ); ?>][field]"
-								   value="<?php echo esc_attr( $topic_subscribe_data[ $key ]['field'] ); ?>"
+								   value="<?php echo esc_attr( $topic_subscribe_data[ $key ]['field'] ?? '' ); ?>"
 								   placeholder="<?php echo esc_attr( $format_setting['1'] ); ?>"
 							>
 						</td>
@@ -251,7 +255,8 @@ class TopicCustomPostType {
 					</td>
 					<td>
 						<button type="button" class="button-secondary"
-								data-topic-id="<?php the_ID(); ?>" disabled><?php esc_attr_e( 'Delete All Topic Subscribe Data', 'iot-for-wp' ); ?> </button>
+								data-topic-id="<?php the_ID(); ?>"
+								disabled><?php esc_attr_e( 'Delete All Topic Subscribe Data', 'iot-for-wp' ); ?> </button>
 					</td>
 				</tr>
 				</tbody>
@@ -332,7 +337,7 @@ class TopicCustomPostType {
 											   style="width: 33%" type="text" placeholder="post meta value"
 											   value="<?php echo esc_attr( $topic_subscribe_data['subscribe_actions']['new_post']['meta_value'] ?? '' ); ?>">
 									</p>
-																	</td>
+								</td>
 							</tr>
 						</table>
 						<table style="width: 100%" id="update_post">
@@ -380,8 +385,8 @@ class TopicCustomPostType {
 											   style="width: 33%" type="text" placeholder="post meta value"
 											   value="<?php echo esc_attr( $topic_subscribe_data['subscribe_actions']['update_post']['meta_value'] ?? '' ); ?>"
 										>
-																			</p>
-																										</td>
+									</p>
+								</td>
 							</tr>
 						</table>
 					</td>
@@ -433,11 +438,11 @@ class TopicCustomPostType {
 							   type="checkbox" <?php echo isset( $topic_publish_data['action_status'] ) ? 'checked' : ''; ?>>
 					</td>
 					<td>
-						<select id="publish_action_select" name="topic[topic_publish][subscribe_actions][type]">
-							<option value="new_to_publish" <?php selected( $topic_publish_data['subscribe_actions']['type'], 'new_to_publish' ); ?>>
+						<select id="publish_action_select" name="topic[topic_publish][publish_actions][type]">
+							<option value="new_to_publish" <?php selected( $topic_publish_data['publish_actions']['type'], 'new_to_publish' ); ?>>
 								<?php esc_attr_e( 'New Post Created', 'iot-for-wp' ); ?>
 							</option>
-							<option value="post_updated" <?php selected( $topic_publish_data['subscribe_actions']['type'], 'post_updated' ); ?>>
+							<option value="post_updated" <?php selected( $topic_publish_data['publish_actions']['type'], 'post_updated' ); ?>>
 								<?php esc_attr_e( 'Post updated', 'iot-for-wp' ); ?>
 							</option>
 						</select>
@@ -448,10 +453,10 @@ class TopicCustomPostType {
 							<tr>
 								<th><label>Post Type:</label></th>
 								<td>
-									<select name="topic[topic_publish][subscribe_actions][new_to_publish][post_type]">
+									<select name="topic[topic_publish][publish_actions][new_to_publish][post_type]">
 										<?php foreach ( $post_types as $key => $object ) : ?>
 											<option value="<?php echo esc_attr( $key ); ?>"
-												<?php selected( $topic_publish_data['subscribe_actions']['new_to_publish']['post_type'], $key ); ?>>
+												<?php selected( $topic_publish_data['publish_actions']['new_to_publish']['post_type'], $key ); ?>>
 												<?php echo esc_attr( ucfirst( $object->name ) ); ?>
 											</option>
 										<?php endforeach; ?>
@@ -461,9 +466,9 @@ class TopicCustomPostType {
 							<tr>
 								<th><label><?php esc_attr_e( 'Data to Publish', 'iot-for-wp' ); ?></label></th>
 								<td><textarea style="width: 100%"
-											  name="topic[topic_publish][subscribe_actions][new_to_publish][data]"
+											  name="topic[topic_publish][publish_actions][new_to_publish][data]"
 											  rows="10"
-											  cols="80"><?php echo esc_attr( $topic_publish_data['subscribe_actions']['new_to_publish']['data'] ?? '' ); ?></textarea>
+											  cols="80"><?php echo esc_attr( $topic_publish_data['publish_actions']['new_to_publish']['data'] ?? '' ); ?></textarea>
 								</td>
 							</tr>
 
@@ -472,10 +477,10 @@ class TopicCustomPostType {
 							<tr>
 								<th><label>Post: </label></th>
 								<td>
-									<select name="topic[topic_publish][subscribe_actions][post_updated][post_id]">
+									<select name="topic[topic_publish][publish_actions][post_updated][post_id]">
 										<?php foreach ( $posts as $post ) : ?>
 											<option value="<?php echo esc_attr( $post->ID ); ?>"
-												<?php selected( $topic_publish_data['subscribe_actions']['post_updated']['post_id'], $post->ID ); ?>>
+												<?php selected( $topic_publish_data['publish_actions']['post_updated']['post_id'], $post->ID ); ?>>
 												<?php echo esc_attr( $post->post_title ); ?>
 											</option>
 										<?php endforeach; ?>
@@ -485,9 +490,9 @@ class TopicCustomPostType {
 							<tr>
 								<th><label><?php esc_attr_e( 'Data to Publish', 'iot-for-wp' ); ?></label></th>
 								<td><textarea style="width: 100%"
-											  name="topic[topic_publish][subscribe_actions][post_updated][data]"
+											  name="topic[topic_publish][publish_actions][post_updated][data]"
 											  rows="10"
-											  cols="80"><?php echo esc_attr( $topic_publish_data['subscribe_actions']['post_updated']['data'] ?? '' ); ?></textarea>
+											  cols="80"><?php echo esc_attr( $topic_publish_data['publish_actions']['post_updated']['data'] ?? '' ); ?></textarea>
 								</td>
 							</tr>
 						</table>
@@ -512,6 +517,10 @@ class TopicCustomPostType {
 	 * @param int $post_id
 	 */
 	public function save_topic_meta_data( int $post_id ): void {
+		update_post_meta( $post_id, self::$topic_meta_subscribe_status, '0' );
+		update_post_meta( $post_id, TopicsRepository::$is_subscribed_meta_key, '0' );
+		sleep( 1 );
+
 		$post_data = wp_unslash( $_POST );
 
 		if ( ! isset( $post_data['topic'] ) || wp_verify_nonce( 'nonce', 'save_topics' ) ) {

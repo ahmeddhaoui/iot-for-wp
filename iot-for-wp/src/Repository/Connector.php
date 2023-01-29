@@ -8,6 +8,9 @@
 // phpcs:ignoreFile
 namespace IOT4WP\Repository;
 
+use IOT4WP\CustomPostTypes\BrokerCustomPostType;
+use IOT4WP\CustomPostTypes\TopicCustomPostType;
+
 class Connector
 {
     public static string $option_last_run_time_name = 'iot_last_run';
@@ -69,5 +72,24 @@ class Connector
 
         $subscriber = SubscribeRepository::get_instance(get_the_title($topic_id));
         $subscriber->start_subscribe($topic_id);
+    }
+
+    public static function publish_message(int $topic_id, string $message): void
+    {
+        $topic_path = get_post_meta($topic_id, TopicCustomPostType::$topic_meta_topic_path, true);
+		$broker_id                    = (int) get_post_meta( $topic_id, TopicCustomPostType::$topic_meta_broker_id, true );
+		$broker_status                = BrokerRepository::is_broker_active( $broker_id );
+		$protocol_name                = get_post_meta( $broker_id, BrokerCustomPostType::$broker_protocol_meta_key, true );
+		$protocol_connection_settings = get_post_meta( $broker_id, BrokerCustomPostType::$broker_protocol_settings_meta_key, true );
+		$protocol_object              = Connector::get_protocol_object_by_protocol_class_name( $protocol_name, $broker_id, $protocol_connection_settings );
+
+        if(!$broker_status){
+            return;
+        }
+        ob_start();
+        if($protocol_object->connect()){
+            $protocol_object->publish($topic_path, $message);
+        }
+        ob_clean();
     }
 }

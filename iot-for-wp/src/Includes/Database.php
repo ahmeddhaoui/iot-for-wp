@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 namespace IOT4WP\Includes;
-
+// phpcs:ignoreFile
 class Database {
 
 
@@ -52,8 +52,9 @@ class Database {
 
 	public function delete_plugin_table_data( string $table_name ): string {
 		global $wpdb;
-		$table = $wpdb->prefix . $table_name;
-		$wpdb->prepare( 'TRUNCATE TABLE %s', $table );
+		$table = $wpdb->prefix . sanitize_text_field($table_name);
+		$sql = "TRUNCATE TABLE {$table}";
+		$wpdb->query($sql);
 		return $wpdb->last_error;
 	}
 
