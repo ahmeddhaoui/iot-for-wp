@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace IOT4WP\Repository;
 
+use Exception;
 use IOT4WP\CustomPostTypes\BrokerCustomPostType;
 use IOT4WP\CustomPostTypes\TopicCustomPostType;
 use IOT4WP\Includes\Database;
+use IOT4WP\Includes\Logger;
+use function IOT4WP\Includes\Logger;
 
 // phpcs:ignoreFile
 class SubscribeRepository
@@ -74,7 +77,7 @@ class SubscribeRepository
 
         try {
             if (!$protocol_object->connect()) {
-                error_log('Cannot Connect');
+                return;
             }
             global $wpdb;
             $topic_path = get_post_meta($topic_id, TopicCustomPostType::$topic_meta_topic_path, true);
@@ -93,8 +96,6 @@ class SubscribeRepository
                 $topic_path,
                 function ($topic_path, $message) use ($topic_id, $wpdb, $topic_subscribe_config) {
                     update_post_meta($topic_id, TopicsRepository::$is_subscribed_meta_key, '1');
-
-                    error_log($message);
                     // check if Message Content changed
                     if (TopicsRepository::get_last_message_by_topic_id($topic_id) === $message && isset($topic_subscribe_config['save_to_db_only_on_change']) && $topic_subscribe_config['save_to_db_only_on_change'] === 'on') {
                         return;
@@ -201,7 +202,7 @@ class SubscribeRepository
             );
 
         } catch (Exception $e) {
-            error_log('Subscribe to Topic failed');
+            Logger::log('Error', 'Subscribe to Topic: '. $topic_path . ' on Server '. get_the_title($broker_id). ' Failed! Error Message: '. $e->getMessage());
         }
     }
 }
