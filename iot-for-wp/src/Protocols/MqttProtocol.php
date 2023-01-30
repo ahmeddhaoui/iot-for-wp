@@ -19,6 +19,7 @@ use PhpMqtt\Client\ConnectionSettings;
 class MqttProtocol extends AbstractIotProtocol {
 
 
+
 	protected MqttClient $mqtt_client;
 	protected ConnectionSettings $mqtt_connection_settings;
 	protected array $broker_settings;
@@ -45,9 +46,10 @@ class MqttProtocol extends AbstractIotProtocol {
 	public static function get_protocol_settings_fields(): array {
 		return array(
 			'server'              => array(
-				'title'    => 'Server',
-				'type'     => 'text',
-				'required' => true,
+				'title'       => 'Server',
+				'type'        => 'text',
+				'required'    => true,
+				'placeholder' => 'broker.com',
 			),
 			'user'                => array(
 				'title'    => 'User',
@@ -60,19 +62,23 @@ class MqttProtocol extends AbstractIotProtocol {
 				'required' => true,
 			),
 			'port'                => array(
-				'title'    => 'Port',
-				'type'     => 'text',
-				'required' => true,
+				'title'       => 'Port TCP',
+				'type'        => 'number',
+				'required'    => true,
+				'placeholder' => '1883',
 			),
 			'clientID'            => array(
-				'title'    => 'ClientID',
-				'type'     => 'text',
-				'required' => false,
+				'title'       => 'ClientID',
+				'type'        => 'text',
+				'required'    => false,
+				'placeholder' => 'Random',
+				'readonly'    => true,
 			),
 			'keep-alive-interval' => array(
-				'title'    => 'Keep alive Intervall',
+				'title'    => 'Keep alive Intervall in seconds',
 				'type'     => 'text',
 				'required' => false,
+				'value'    => 65535,
 			),
 			'last-will-topic'     => array(
 				'title'    => 'Last Will Topic',
@@ -83,6 +89,20 @@ class MqttProtocol extends AbstractIotProtocol {
 				'title'    => 'Last Will Message',
 				'type'     => 'text',
 				'required' => false,
+			),
+			'qos'                 => array(
+				'title'       => 'Quality of Service',
+				'type'        => 'number',
+				'required'    => false,
+				'placeholder' => 'default 0',
+				'value'       => 0,
+			),
+			'max-reconnect'       => array(
+				'title'       => 'Max Reconnect Attempts',
+				'type'        => 'number',
+				'required'    => false,
+				'placeholder' => '',
+				'value'       => 3,
 			),
 		);
 	}
@@ -108,11 +128,7 @@ class MqttProtocol extends AbstractIotProtocol {
 			try {
 				$this->mqtt_client->connect( $this->mqtt_connection_settings );
 			} catch ( ConfigurationInvalidException | ConnectingToBrokerFailedException $e ) {
-				if ( true === WP_DEBUG ) {
-                    // phpcs:disable WordPress.PHP.DevelopmentFunctions
-					Logger::log( 'Error: ', 'Cant Connect for Server ' . $this->broker_settings['server'] . ' with Message: ' . $e->getMessage() );
-                    // phpcs:enable
-				}
+				Logger::log( 'Error: ', 'Cant Connect for Server ' . $this->broker_settings['server'] . ' with Message: ' . $e->getMessage() );
 				return false;
 			}
 		}
@@ -124,11 +140,11 @@ class MqttProtocol extends AbstractIotProtocol {
 	}
 
 	public function publish( string $topic, string $message ): void {
-		$this->mqtt_client->publish( $topic, $message );
+		$this->mqtt_client->publish( $topic, $message, $this->broker_settings['qos'] );
 	}
 
-	public function subscribe( string $topic, callable $callback, $loop, $quality_of_service ): void {
-		$this->mqtt_client->subscribe( $topic, $callback, $quality_of_service );
+	public function subscribe( string $topic, callable $callback, $loop ): void {
+		$this->mqtt_client->subscribe( $topic, $callback, $this->broker_settings['qos'] );
 
 		if ( $loop ) {
 			$this->mqtt_client->loop();

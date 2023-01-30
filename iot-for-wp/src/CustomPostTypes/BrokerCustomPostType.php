@@ -12,6 +12,7 @@ use IOT4WP\Includes\IotForWp;
 
 class BrokerCustomPostType {
 
+
 	public static string $custom_post_name                  = 'iot_broker';
 	public static string $broker_status_meta_key            = 'broker_status';
 	public static string $broker_protocol_meta_key          = 'broker_protocol';
@@ -114,19 +115,28 @@ class BrokerCustomPostType {
 		<?php foreach ( $protocols as $id => $data ) : ?>
 		<div id="<?php echo esc_attr( $id ); ?>">
 			<h3><?php echo esc_attr( $data['title'] . ' Settings' ); ?></h3>
+			<p><?php esc_attr_e( '* required', 'iot-for-wp' ); ?></p>
 			<table class="form-table">
-				<?php foreach ( $data['settings'] as $key => $setting ) : ?>
+				<?php
+				foreach ( $data['settings'] as $key => $setting ) :
+					$title         = $setting['title'];
+					$title        .= $setting['required'] ? __( '*', 'iot-for-wp' ) : '';
+					$default_value = $setting['value'] ?? '';
+					$value         = $broker_protocol_settings[ $key ] ?? $default_value;
+					$required      = isset( $setting['readonly'] ) && $setting['readonly'] ? 'disabled' : '';
+					?>
 					<tr>
 						<?php
 						echo sprintf(
-							'<th><h4 style="display: inline;">%s</h4></th> <td><input style="width: 50em" class="%s" name=%s type="%s" value="%s" %s autocomplete="new-password" data-key="%s"></td>',
-							esc_attr( $setting['title'] ),
-							esc_attr( $id ),
+							'<th><h4 style="display: inline;">%s</h4></th> <td><input style="" class="regular-text" name=%s type="%s" value="%s" %s autocomplete="new-password" data-key="%s" placeholder="%s" %s></td>',
+							esc_attr( $title ),
 							wp_json_encode( $id . '[' . $key . ']' ),
 							esc_attr( $setting['type'] ),
-							esc_attr( $broker_protocol_settings[ $key ] ?? '' ),
+							esc_attr( $value ),
 							esc_attr( true === $setting['required'] ? 'required' : '' ),
 							esc_attr( $key ),
+							esc_attr( $setting['placeholder'] ?? '' ),
+							esc_attr( $required )
 						);
 						?>
 					</tr>

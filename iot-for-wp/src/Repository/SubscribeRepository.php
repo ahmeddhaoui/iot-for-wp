@@ -197,8 +197,7 @@ class SubscribeRepository
                     }
 
                 },
-                1,
-                0
+                1
             );
 
         } catch (Exception $e) {
