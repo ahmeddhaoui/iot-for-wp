@@ -128,8 +128,9 @@ class BrokerCustomPostType {
 					<tr>
 						<?php
 						echo sprintf(
-							'<th><h4 style="display: inline;">%s</h4></th> <td><input style="" class="regular-text" name=%s type="%s" value="%s" %s autocomplete="new-password" data-key="%s" placeholder="%s" %s></td>',
+							'<th><h4 style="display: inline;">%s</h4></th> <td><input style="" class="regular-text %s" name=%s type="%s" value="%s" %s autocomplete="new-password" data-key="%s" placeholder="%s" %s></td>',
 							esc_attr( $title ),
+							esc_attr( $id ),
 							wp_json_encode( $id . '[' . $key . ']' ),
 							esc_attr( $setting['type'] ),
 							esc_attr( $value ),

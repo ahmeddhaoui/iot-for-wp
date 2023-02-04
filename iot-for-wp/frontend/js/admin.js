@@ -47,6 +47,8 @@ jQuery(document).ready(function ($) {
             broker_data[key] = $(element).val();
         });
 
+        console.log(broker_input_data);
+        console.log(protocol);
         $.ajax({
             type: 'POST',
             url: iot4wp_admin_script.ajaxurl,

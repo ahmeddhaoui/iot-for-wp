@@ -8,3 +8,4 @@
 
 #iot-for-wp
 iot-for-wp/vendor
+/iot-for-wp/.phpunit.result.cache

@@ -3,6 +3,7 @@ FROM wordpress:php7.4-apache
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 RUN apt update && apt install -y less
+RUN apt-get -y install subversion
 
 RUN curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > wp-cli.phar \
     && chmod +x wp-cli.phar \
