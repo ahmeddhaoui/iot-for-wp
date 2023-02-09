@@ -24,7 +24,7 @@ class IotForWp {
 
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'load_classes' ), 0 );
-		add_action( 'init', array( __CLASS__, 'register_protocols' ) );
+		add_action( 'init', array( __CLASS__, 'register_protocols'), 10 , 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_admin_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_app_scripts' ) );
 	}

@@ -28,11 +28,8 @@ class AdminSettings {
 		$this->setting_page                    = 'iot-for-wp-settings-admin';
 		$this->setting_section                 = 'iot_for_wp_settings_setting_section';
 		$this->setting_fields                  = $this->init_setting_fields();
-		$capability                            = $this->iot_for_wp_settings_options['plugin_management'];
+		$capability                            = $this->iot_for_wp_settings_options['plugin_management'] ?? 'manage_options';
 
-		if ( empty( $capability ) ) {
-			$capability = 'manage_options';
-		}
 		self::$plugin_user_capability = $capability;
 
 		add_action( 'admin_menu', array( $this, 'add_plugin_menu_page' ) );

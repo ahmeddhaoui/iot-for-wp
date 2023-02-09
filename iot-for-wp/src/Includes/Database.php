@@ -12,7 +12,6 @@ namespace IOT4WP\Includes;
 class Database
 {
 
-
     public static string $iot_data_table_name = 'iot_data';
     public static string $iot_logs_table_name = 'iot_logs';
 
@@ -53,7 +52,7 @@ class Database
         return $wpdb->last_error;
     }
 
-    public function delete_plugin_table_data(string $table_name): string
+    public static function delete_plugin_table_data(string $table_name): string
     {
         global $wpdb;
         $table = $wpdb->prefix . sanitize_text_field($table_name);
@@ -117,14 +116,28 @@ class Database
                 'message' => $message
             )
         );
-	}
+    }
 
-	public static function delete_data_from_table(string $table, string $intervall): void
+    public static function delete_data_from_table(string $table, string $intervall): void
     {
         global $wpdb;
 
-        $table_name = $wpdb->prefix.$table;
+        $table_name = $wpdb->prefix . $table;
         $sql = $wpdb->prepare("DELETE FROM {$table_name} WHERE created_date < NOW() - INTERVAL %s DAY;", $intervall);
         $wpdb->query($sql);
+    }
+
+    public static function drop_plugin_tables(): void
+    {
+        global $wpdb;
+        $tables = [
+            $wpdb->prefix . self::$iot_data_table_name,
+            $wpdb->prefix . self::$iot_logs_table_name,
+        ];
+
+        foreach ($tables as $table) {
+            $wpdb->query("DROP TABLE IF EXISTS {$table}");
+        }
+
     }
 }

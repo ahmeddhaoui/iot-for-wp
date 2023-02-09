@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace IOT4WP\Includes;
 
 // phpcs:ignoreFile
+use IOT4WP\CustomPostTypes\BrokerCustomPostType;
+
 class Activation
 {
 
@@ -29,6 +31,16 @@ class Activation
         if (!wp_next_scheduled('iot_check_daily_data_delete')) {
             wp_schedule_event(time(), 'daily', 'iot_check_daily_data_delete');
         }
+
+        $active_broker_ids = get_option('iot_active_brokers') ?? [];
+
+        if(count($active_broker_ids)){
+            foreach ($active_broker_ids as $broker_id){
+                update_post_meta($broker_id, BrokerCustomPostType::$broker_status_meta_key, '1');
+            }
+        }
+
+        update_option('iot_active_brokers', '', false);
         flush_rewrite_rules();
     }
 
