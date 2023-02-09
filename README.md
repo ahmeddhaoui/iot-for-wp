@@ -23,6 +23,7 @@ start the docker environment
 #### Website Url: <a href="http://127.0.0.1">localhost</a> 
 #### User: iot4wp
 #### Password: iot4wp
+More variables in ´.env´ file
 
 ### Phpmyadmin
 <a href="http://127.0.0.1:8081/">Phpmyadmin</a>

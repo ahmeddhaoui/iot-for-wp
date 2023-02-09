@@ -7,8 +7,8 @@
  *
  * @wordpress-plugin
  * Plugin Name:       IoT for WP
- * Plugin URI:        https://example.com/plugins/the-basics/
- * Description:       IOT for WordPress is a Plugin to connect IOT Objects with WordPress and communicate with them throw protocols like MQTT.
+ * Plugin URI:        https://techda.net
+ * Description:       IOT for WP is a Plugin to connect IOT Objects with WordPress and communicate with them throw protocols like MQTT.
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.4
