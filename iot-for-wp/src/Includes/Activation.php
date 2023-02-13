@@ -34,7 +34,7 @@ class Activation
 
         $active_broker_ids = get_option('iot_active_brokers') ?? [];
 
-        if(count($active_broker_ids)){
+        if(count($active_broker_ids) && is_array($active_broker_ids)){
             foreach ($active_broker_ids as $broker_id){
                 update_post_meta($broker_id, BrokerCustomPostType::$broker_status_meta_key, '1');
             }

@@ -17,6 +17,11 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
+if (is_readable(__DIR__ . '/vendor/autoload.php')) {
+    require __DIR__ . '/vendor/autoload.php';
+}
+
+
 //deactivate all Plugin Features
 Deactivation::deactivate(true);
 
